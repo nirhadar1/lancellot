@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Draws App</title>
+</head>
+<body>
+<div>
+    123
+</div>
+    <div>
+        <h2>All Draws</h2>
+        <ul id="draws" />
+    </div>
+    <div>
+        <h2>Search by ID</h2>
+        <input type="text" id="drawID" size="5" />
+        <input type="button" value="Search" onclick="find();" />
+        <p id="draw" />
+    </div>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        loadDoc();
+        function loadDoc() {
+            var xhttp;
+            if (window.XMLHttpRequest) {
+                // code for modern browsers
+                xhttp = new XMLHttpRequest();
+            } else {
+                // code for IE6, IE5
+                xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xhttp.onreadystatechange = function () {
+                if (xhttp.readyState == 4 && xhttp.status == 200) {
+                    document.getElementById("demo").innerHTML = xhttp.responseText;
+                }
+            };
+            xhttp.open("GET", "http://109.66.140.218:8080/api/Draws/3", true);
+            xhttp.send();
+        }
+        var uri = 'api/Draws';
+
+        $(document).ready(function () {
+            // Send an AJAX request
+            $.getJSON(uri)
+                .done(function (data) {
+                    // On success, 'data' contains a list of draws.
+                    $.each(data, function (key, item) {
+                        // Add a list item for the draw.
+                        $('<li>', { text: formatItem(item) }).appendTo($('#draws'));
+                    });
+                });
+        });
+
+        function formatItem(item) {
+            return 'id:' + item.Id + ' Amount:' + item.Amount;
+        }
+
+        function find() {
+            var id = $('#drawID').val();
+            $.getJSON(uri + '/' + id)
+                .done(function (data) {
+                    $('#draw').text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $('#draw').text('Error: ' + err);
+                });
+        }
+    </script>
+</body>
+</html>
